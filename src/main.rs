@@ -17,13 +17,12 @@ fn main() {
         (1500, Duration::from_secs(5)),
     ];
 
-    let rows_of_notes_and_durations =
-        vec![notes_and_durations.clone(), notes_and_durations2.clone()];
+    let rows_of_notes_and_durations = vec![notes_and_durations, notes_and_durations2];
 
-    play_many_notes(rows_of_notes_and_durations.clone());
+    play_many_notes(&rows_of_notes_and_durations);
 }
 
-fn play_notes_with_duration(notes_and_durations: Vec<(u32, Duration)>) {
+fn play_notes_with_duration(notes_and_durations: &Vec<(u32, Duration)>) {
     let stream_handle = OutputStream::try_default().unwrap();
     let (sender, receiver) = mpsc::channel();
 
@@ -51,14 +50,14 @@ fn play_notes_with_duration(notes_and_durations: Vec<(u32, Duration)>) {
     });
 
     for (note, duration) in notes_and_durations {
-        sender.send((note, duration)).unwrap();
+        sender.send((*note, *duration)).unwrap();
     }
     std::thread::sleep(std::time::Duration::from_secs(5));
 }
 
-fn play_many_notes(notes_and_durations_table: Vec<Vec<(u32, Duration)>>) {
+fn play_many_notes(notes_and_durations_table: &Vec<Vec<(u32, Duration)>>) {
     for notes_vector in notes_and_durations_table {
-        play_notes_with_duration(notes_vector.clone());
+        play_notes_with_duration(notes_vector);
         std::thread::sleep(std::time::Duration::from_secs(10));
     }
 }
